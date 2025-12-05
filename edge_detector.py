@@ -9,7 +9,17 @@ import threading
 from queue import Queue
 
 class EdgeDetector:
-    def __init__(self, audio_threshold=500, silence_limit=2.0, rate=16000, chunk=1024):
+    """Edge朗读检测器
+    检测Microsoft Edge前台时的语音活动并录音。
+
+    参数:
+        audio_threshold (int): 语音检测的能量阈值，默认300。
+            能量计算为音频chunk的RMS值，超过此阈值视为有语音。
+        silence_limit (float): 静音持续时间（秒）超过此值停止录音，默认2.0。
+        rate (int): 采样率，默认16000。
+        chunk (int): 每次读取的音频帧数，默认1024。
+    """
+    def __init__(self, audio_threshold=300, silence_limit=2.0, rate=16000, chunk=1024):
         self.audio_threshold = audio_threshold
         self.silence_limit = silence_limit
         self.rate = rate
@@ -70,18 +80,24 @@ class EdgeDetector:
         print("音频流已启动")
 
     def audio_callback(self, in_data, frame_count, time_info, status):
-        """音频流回调"""
+        """音频流回调
+        计算音频数据的RMS能量（单位与原始int16样本相关）。
+        能量超过audio_threshold时视为有语音，否则视为静音。
+        """
         data = np.frombuffer(in_data, dtype=np.int16)
-        energy = np.sqrt(np.mean(data**2))
+        # compute RMS energy, avoid NaN
+        if len(data) == 0:
+            energy = 0.0
+        else:
+            energy = np.linalg.norm(data, 2) / np.sqrt(len(data))
 
         # 每50个chunk打印一次能量（调试用）
         self.callback_count += 1
         if self.callback_count % 50 == 0:
             print(f"音频能量 (chunk {self.callback_count}): {energy:.2f}")
 
-        # print(f"energy is {energy}")
-        # print(f"audio_threshold is {self.audio_threshold}")
-        if True or energy > self.audio_threshold:
+        print(f"energy is {energy}, audio_threshold is {self.audio_threshold}")
+        if energy > self.audio_threshold:
             if not self.recording and self.is_edge_foreground():
                 print(f"检测到语音且Edge在前台，开始录音（能量={energy:.2f}）")
                 self.recording = True

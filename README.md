@@ -25,12 +25,10 @@
 cd /path/to/project
 ```
 
-### 2. 创建虚拟环境并安装依赖
+### 2. 使用安装脚本（推荐）
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install pyaudio numpy psutil
+./install_deps.sh
 ```
 
 ### 3. 配置音频环回（可选）
@@ -74,6 +72,7 @@ python audio_recorder.py 2>&1
 - `edge_detector.py`：主检测与录音程序。
 - `audio_recorder.py`：通用语音活动录音机。
 - `check_read_aloud.applescript`：AppleScript 检测脚本（备用）。
+- `install_deps.sh`：自动安装依赖并创建虚拟环境的脚本。
 - `test_detector.py`、`quick_test.py`：测试脚本。
 
 ## 注意事项
