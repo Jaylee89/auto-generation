@@ -168,3 +168,4 @@ cython_debug/
 # Audio recordings (project-specific)
 edge_recordings/
 recordings/
+.roo
