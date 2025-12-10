@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import time
 import psutil
 import numpy as np
@@ -68,16 +69,25 @@ class EdgeDetector:
     def start_audio_monitoring(self):
         """开始音频监控"""
         print(f"启动音频监控: rate={self.rate}, chunk={self.chunk}, threshold={self.audio_threshold}")
-        self.stream = self.audio.open(
-            format=pyaudio.paInt16,
-            channels=1,
-            rate=self.rate,
-            input=True,
-            frames_per_buffer=self.chunk,
-            stream_callback=self.audio_callback
-        )
-        self.stream.start_stream()
-        print("音频流已启动")
+        try:
+            self.stream = self.audio.open(
+                format=pyaudio.paInt16,
+                channels=1,
+                rate=self.rate,
+                input=True,
+                frames_per_buffer=self.chunk,
+                stream_callback=self.audio_callback
+            )
+            self.stream.start_stream()
+            print("音频流已启动")
+        except OSError as e:
+            print(f"无法打开音频流: {e}")
+            print("这可能是因为麦克风权限未授予。请按照以下步骤操作：")
+            print("1. 打开系统偏好设置 -> 安全性与隐私 -> 麦克风")
+            print("2. 确保终端（Terminal）或 Python 已被允许使用麦克风")
+            print("3. 如果未列出，请尝试重新启动终端并再次运行")
+            print("4. 你也可以尝试运行 'tccutil reset Microphone' 来重置权限")
+            raise
 
     def audio_callback(self, in_data, frame_count, time_info, status):
         """音频流回调
@@ -138,7 +148,11 @@ class EdgeDetector:
     def run(self):
         """主循环"""
         print("启动Edge朗读检测器...")
-        self.start_audio_monitoring()
+        try:
+            self.start_audio_monitoring()
+        except OSError:
+            print("音频监控启动失败，程序退出。")
+            sys.exit(1)
         last_status_time = time.time()
         status_interval = 10.0  # 秒
         try:

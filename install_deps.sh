@@ -53,4 +53,4 @@ pip install -r "$REQUIREMENTS_FILE"
 
 echo "=== Installation completed successfully ==="
 echo "To activate the virtual environment manually, run:"
-echo "  source $ACTIVATE_SCRIPT"
+echo -e "\033[33m  source $ACTIVATE_SCRIPT\033[0m"
