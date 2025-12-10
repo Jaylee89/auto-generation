@@ -2,6 +2,11 @@
 
 本工具用于在 Microsoft Edge 浏览器启动“大声朗读”功能时，自动录制电脑音频。
 
+# 强烈推荐使用easyvoice, 免费，稳定，强大
+
+1. https://easyvoice.ioplus.tech/
+2. https://easyvoice.ioplus.tech/generate
+
 ## 工作原理
 
 1. **音频监控**：使用 PyAudio 持续监听系统音频输入（需配置环回设备）或麦克风输入。
@@ -22,7 +27,7 @@
 ### 1. 克隆或下载本仓库
 
 ```bash
-cd /path/to/project
+git clone https://github.com/Jaylee89/auto-generation.git && cd auto-generation
 ```
 
 ### 2. 使用安装脚本（推荐）
